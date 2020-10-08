@@ -12,7 +12,7 @@
 
 使用了 uniCloud 的前端网页托管，基于阿里云，使用默认域名
 
-[static-3c8b3de0-0ee0-43be-8466-4896b29c807b.bspapp.com](static-3c8b3de0-0ee0-43be-8466-4896b29c807b.bspapp.com)
+[static-3c8b3de0-0ee0-43be-8466-4896b29c807b.bspapp.com](https://static-3c8b3de0-0ee0-43be-8466-4896b29c807b.bspapp.com/#/)
 
 
 
