@@ -21,7 +21,7 @@
 		</view>
 		<!-- 不显示的内容 -->
 		<!-- 工作时间选择器 -->
-		<u-picker v-model="showWork" mode="time" :params="params" @confirm="confirmTimePicker" default-time="00:00:00">
+		<u-picker v-model="showWork" mode="time" :params="timePickerParams" @confirm="confirmWorkTime" default-time="00:00:00">
 		</u-picker>
 		<!-- 休息时间选择器 -->
 		<u-picker v-model="showReset" mode="time" :params="params" @confirm="resetchange" default-time="00:00:00">
@@ -53,8 +53,7 @@
 				timePickerParams: {
 					hour: true,
 					minute: true,
-					second: true,
-					timestamp: true
+					second: true
 				},
 				// 是否显示时间选择器
 				showTimePicker: {
@@ -82,15 +81,16 @@
 					}
 				})
 			},
-			// showTimePicker(type){
-			// 	if(type === 'work'){
-
-			// 	}else if (type === 'reset'){
-
-			// 	}
-			// },
-			confirmTimePicker(e) {
-				console.log(e)
+			confirmWorkTime(e){
+				const time = e.hour*1 + e.minute*1 + e.second*1
+				if(time === 0){
+					this.$u.toast('请设置有效的时间')
+				}else{
+					this.time.work = time
+				}
+			},
+			confirmResetTime(){
+				
 			},
 			workchange(e) {
 				this.worktime = e.minute + ' : ' + e.second
