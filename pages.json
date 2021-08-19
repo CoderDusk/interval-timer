@@ -27,7 +27,7 @@
     ],
 	"globalStyle": {
 		// "navigationBarTextStyle": "black",
-		// "navigationBarTitleText": "间隔计时器",
+		"navigationBarTitleText": "间隔计时器"
 		// "navigationBarBackgroundColor": "#FFFFFF"
 	}
 

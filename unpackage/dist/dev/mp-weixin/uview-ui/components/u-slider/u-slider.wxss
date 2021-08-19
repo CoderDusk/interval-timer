@@ -1,0 +1,48 @@
+@charset "UTF-8";
+/**
+ * 下方引入的为uView UI的集成样式文件，为scss预处理器，其中包含了一些"u-"开头的自定义变量
+ * 使用的时候，请将下面的一行复制到您的uniapp项目根目录的uni.scss中即可
+ * uView自定义的css类名和scss变量，均以"u-"开头，不会造成冲突，请放心使用 
+ */
+.u-slider.data-v-63602940 {
+  position: relative;
+  border-radius: 999px;
+  border-radius: 999px;
+  background-color: #ebedf0;
+}
+.u-slider.data-v-63602940:before {
+  position: absolute;
+  right: 0;
+  left: 0;
+  content: '';
+  top: -8px;
+  bottom: -8px;
+  z-index: -1;
+}
+.u-slider__gap.data-v-63602940 {
+  position: relative;
+  border-radius: inherit;
+  -webkit-transition: width 0.2s;
+  transition: width 0.2s;
+  transition: width 0.2s;
+  background-color: #1989fa;
+}
+.u-slider__button.data-v-63602940 {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  background-color: #fff;
+  cursor: pointer;
+}
+.u-slider__button-wrap.data-v-63602940 {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  -webkit-transform: translate3d(50%, -50%, 0);
+          transform: translate3d(50%, -50%, 0);
+}
+.u-slider--disabled.data-v-63602940 {
+  opacity: 0.5;
+}
+

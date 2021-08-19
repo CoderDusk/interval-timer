@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "pages/start/start",
+    "pages/timer/timer"
+  ],
+  "subPackages": [],
+  "window": {},
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json"
+}
