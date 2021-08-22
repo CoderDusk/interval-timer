@@ -1,8 +1,14 @@
 <script>
 	export default {
 		onLaunch: function() {
+			
 		},
 		onShow: function() {
+			const intervalTimer = uni.getStorageSync('interval-timer')
+			
+			if((typeof intervalTimer) !== 'object'){
+				uni.setStorageSync('interval-timer',{})
+			}
 		},
 		onHide: function() {
 		}

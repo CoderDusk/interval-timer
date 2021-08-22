@@ -4,7 +4,7 @@
 			<view class="title">快速开始</view>
 			<view class="number-box">
 
-				<view class="group-name">组数</view>
+				<view class="group-name">循环次数</view>
 				<u-number-box v-model="cycleTimes"></u-number-box>
 
 				<view class="group-name">工作</view>
@@ -15,16 +15,22 @@
 				<view @click="showTimePicker.reset = true" class="timer-show">{{ showTime.reset }}</view>
 
 			</view>
-			<u-button class="start-button" type="primary" @click="gotoTimer">
+			<u-button class="start-button" type="primary" @click="startTimer">
 				<u-icon class="start-icon" name="hourglass" color="white" size="42"></u-icon>开始
+			</u-button>
+
+			<u-button class="start-button" type="primary" plain  @click="saveTimer()">
+				<u-icon class="start-icon" size="42" name="download"></u-icon>保存
 			</u-button>
 		</view>
 		<!-- 不显示的内容 -->
 		<!-- 工作时间选择器 -->
-		<u-picker v-model="showTimePicker.work" mode="time" :params="timePickerParams" @confirm="confirmWorkTime" default-time="00:00:00">
+		<u-picker v-model="showTimePicker.work" mode="time" :params="timePickerParams" @confirm="confirmWorkTime"
+			default-time="00:00:00">
 		</u-picker>
 		<!-- 休息时间选择器 -->
-		<u-picker v-model="showTimePicker.reset" mode="time" :params="timePickerParams" @confirm="confirmResetTime" default-time="00:00:00">
+		<u-picker v-model="showTimePicker.reset" mode="time" :params="timePickerParams" @confirm="confirmResetTime"
+			default-time="00:00:00">
 		</u-picker>
 	</view>
 </template>
@@ -52,45 +58,84 @@
 					reset: 0
 				},
 				// 展示的时间
-				showTime:{
-					work:'请设置工作时间',
-					reset:'请设置休息时间',
-				}
-
+				showTime: {
+					work: '请设置工作时间',
+					reset: '请设置休息时间',
+				},
+				timerStorage:{},
 			};
 		},
+		onLoad() {
+			this.timerStorage = uni.getStorageSync('interval-timer')
+			if(this.timerStorage.currentTimer !== undefined){
+				const timer = this.timerStorage.currentTimer
+				console.log(timer)
+				this.cycleTimes = timer.cycleTimes
+				this.time.work = timer.workTime
+				this.time.reset = timer.resetTime
+			}
+		},
 		methods: {
-			gotoTimer() {
-				if(this.cycleTimes === 0 ){
-					this.$u.toast('循环次数不能为0')
-				} else if(this.time.work === 0){
-					this.$u.toast('工作时间不能为空')
-				} else if(this.time.reset === 0){
-					this.$u.toast('休息时间不能为空')
-				} else {
-					uni.navigateTo({
-						url:"../timer/timer"
-					})
-				}
-			},
-			confirmWorkTime(e){
-				const time = e.hour*1 + e.minute*1 + e.second*1
-				if(time === 0){
+			// 确认工作时间选择器
+			confirmWorkTime(e) {
+				const time = e.hour * 1 + e.minute * 1 + e.second * 1
+				if (time === 0) {
 					this.$u.toast('请设置有效的时间')
-				}else{
+				} else {
 					this.time.work = time
 					this.showTime.work = `${e.hour} : ${e.minute} : ${e.second}`
 				}
 			},
-			confirmResetTime(e){
-				const time = e.hour*1 + e.minute*1 + e.second*1
-				if(time === 0){
+			// 确认休息时间选择器
+			confirmResetTime(e) {
+				const time = e.hour * 1 + e.minute * 1 + e.second * 1
+				if (time === 0) {
 					this.$u.toast('请设置有效的时间')
-				}else{
+				} else {
 					this.time.reset = time
 					this.showTime.reset = `${e.hour} : ${e.minute} : ${e.second}`
 				}
 			},
+			// 验证计时器
+			validateTimer(){
+				if (this.cycleTimes === 0) {
+					this.$u.toast('循环次数不能为0')
+					return false
+				} else if (this.time.work === 0) {
+					this.$u.toast('工作时间不能为空')
+					return false
+				} else if (this.time.reset === 0) {
+					this.$u.toast('休息时间不能为空')
+					return false
+				} else {
+					return true
+				}
+			},
+			// 开始计时器
+			startTimer() {
+				if(this.validateTimer()){
+					uni.navigateTo({
+						url: "../timer/timer"
+					})
+				}
+			},
+			saveTimer(){
+				if(this.validateTimer()){
+					let intervalTimer = uni.getStorageSync('interval-timer')
+					intervalTimer.currentTimer = this.timer
+					uni.setStorageSync('interval-timer',intervalTimer)
+				}
+				
+			},
+		},
+		computed:{
+			timer(){
+				return {
+					cycleTimes:this.cycleTimes,
+					workTime:this.time.work,
+					resetTime:this.time.reset,
+				}
+			}
 		}
 	}
 </script>
@@ -99,6 +144,7 @@
 	page {
 		background-color: $u-bg-color;
 		max-width: 420px;
+		margin: 0 auto;
 	}
 
 	.timer-setting {
