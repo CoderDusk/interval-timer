@@ -7,7 +7,14 @@
 			const intervalTimer = uni.getStorageSync('interval-timer')
 			
 			if((typeof intervalTimer) !== 'object'){
-				uni.setStorageSync('interval-timer',{})
+				uni.setStorageSync('interval-timer',{
+					currentTimer:{
+						cycleTimes:1,
+						workTime:0,
+						resetTime:0
+					},
+					timerList:[]
+				})
 			}
 		},
 		onHide: function() {

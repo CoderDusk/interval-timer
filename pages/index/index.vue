@@ -5,7 +5,7 @@
 			<view class="number-box">
 
 				<view class="group-name">循环次数</view>
-				<u-number-box v-model="cycleTimes"></u-number-box>
+				<u-number-box v-model="cycleTimes" :min="1"></u-number-box>
 
 				<view class="group-name">工作</view>
 				<view @click="showTimePicker.work = true" class="timer-show">{{showTime.work}}</view>
@@ -19,7 +19,7 @@
 				<u-icon class="start-icon" name="hourglass" color="white" size="42"></u-icon>开始
 			</u-button>
 
-			<u-button class="start-button" type="primary" plain  @click="saveTimer()">
+			<u-button class="start-button" type="primary" plain @click="saveTimer()">
 				<u-icon class="start-icon" size="42" name="download"></u-icon>保存
 			</u-button>
 		</view>
@@ -51,34 +51,41 @@
 					reset: false,
 				},
 				// 循环次数
-				cycleTimes: 0,
+				cycleTimes: 1,
 				// 设定的时间
 				time: {
 					work: 0,
 					reset: 0
 				},
 				// 展示的时间
-				showTime: {
-					work: '请设置工作时间',
-					reset: '请设置休息时间',
-				},
-				timerStorage:{},
+				// showTime: {
+				// 	work: '请设置工作时间',
+				// 	reset: '请设置休息时间',
+				// },
+				timerStorage: {},
 			};
 		},
 		onLoad() {
 			this.timerStorage = uni.getStorageSync('interval-timer')
-			if(this.timerStorage.currentTimer !== undefined){
+			if (this.timerStorage.currentTimer !== undefined) {
 				const timer = this.timerStorage.currentTimer
-				console.log(timer)
 				this.cycleTimes = timer.cycleTimes
 				this.time.work = timer.workTime
 				this.time.reset = timer.resetTime
 			}
 		},
 		methods: {
+			secondsToString(seconds) {
+				let h = (seconds / 3600) < 10 ? '0' + parseInt(seconds / 3600) : parseInt(seconds / 3600)
+				let m = parseInt(seconds / 60) >= 60 ? parseInt(seconds / 60) % 60 : parseInt(seconds / 60)
+				m = m < 10 ? '0' + m : m
+				let s = (seconds % 60) < 10 ? '0' + parseInt(seconds % 60) : parseInt(seconds % 60)
+				
+				return h + ':' + m + ':' + s
+			},
 			// 确认工作时间选择器
 			confirmWorkTime(e) {
-				const time = e.hour * 1 + e.minute * 1 + e.second * 1
+				const time = e.hour * 3600 + e.minute * 60 + e.second * 1
 				if (time === 0) {
 					this.$u.toast('请设置有效的时间')
 				} else {
@@ -88,7 +95,7 @@
 			},
 			// 确认休息时间选择器
 			confirmResetTime(e) {
-				const time = e.hour * 1 + e.minute * 1 + e.second * 1
+				const time = e.hour * 3600 + e.minute * 60 + e.second * 1
 				if (time === 0) {
 					this.$u.toast('请设置有效的时间')
 				} else {
@@ -97,7 +104,7 @@
 				}
 			},
 			// 验证计时器
-			validateTimer(){
+			validateTimer() {
 				if (this.cycleTimes === 0) {
 					this.$u.toast('循环次数不能为0')
 					return false
@@ -113,27 +120,35 @@
 			},
 			// 开始计时器
 			startTimer() {
-				if(this.validateTimer()){
+				if (this.validateTimer()) {
 					uni.navigateTo({
 						url: "../timer/timer"
 					})
 				}
 			},
-			saveTimer(){
-				if(this.validateTimer()){
+			saveTimer() {
+				if (this.validateTimer()) {
 					let intervalTimer = uni.getStorageSync('interval-timer')
 					intervalTimer.currentTimer = this.timer
-					uni.setStorageSync('interval-timer',intervalTimer)
+					uni.setStorageSync('interval-timer', intervalTimer)
+					
+					console.log(this.timer)
 				}
-				
+
 			},
 		},
-		computed:{
-			timer(){
+		computed: {
+			timer() {
 				return {
-					cycleTimes:this.cycleTimes,
-					workTime:this.time.work,
-					resetTime:this.time.reset,
+					cycleTimes: this.cycleTimes,
+					workTime: this.time.work,
+					resetTime: this.time.reset,
+				}
+			},
+			showTime() {
+				return {
+					work: this.time.work === 0 ? '请设置工作时间' : this.secondsToString(this.time.work),
+					reset: this.time.reset === 0 ? '请设置休息时间' : this.secondsToString(this.time.reset)
 				}
 			}
 		}
