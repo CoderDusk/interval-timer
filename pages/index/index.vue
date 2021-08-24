@@ -8,11 +8,11 @@
 				<u-number-box v-model="cycleTimes" :min="1"></u-number-box>
 
 				<view class="group-name">工作</view>
-				<view @click="showTimePicker.work = true" class="timer-show">{{showTime.work}}</view>
+				<view @click="show.workTimePicker = true" class="timer-show">{{showTime.work}}</view>
 
 
 				<view class="group-name">休息</view>
-				<view @click="showTimePicker.reset = true" class="timer-show">{{ showTime.reset }}</view>
+				<view @click="show.reseTimetPicker = true" class="timer-show">{{ showTime.reset }}</view>
 
 			</view>
 			<u-button class="start-button" type="primary" @click="startTimer">
@@ -23,13 +23,19 @@
 				<u-icon class="start-icon" size="42" name="download"></u-icon>保存
 			</u-button>
 		</view>
+
+		<!-- 输入计时器标题的弹出层 -->
+		<u-popup v-model="show.inputTimerTitleModal" mode="center">
+			<u-input placeholder="请输入计时器标题" v-model="timerTitle"></u-input>
+		</u-popup>
+
 		<!-- 不显示的内容 -->
 		<!-- 工作时间选择器 -->
-		<u-picker v-model="showTimePicker.work" mode="time" :params="timePickerParams" @confirm="confirmWorkTime"
+		<u-picker v-model="show.workTimePicker" mode="time" :params="timePickerParams" @confirm="confirmWorkTime"
 			default-time="00:00:00">
 		</u-picker>
 		<!-- 休息时间选择器 -->
-		<u-picker v-model="showTimePicker.reset" mode="time" :params="timePickerParams" @confirm="confirmResetTime"
+		<u-picker v-model="show.reseTimetPicker" mode="time" :params="timePickerParams" @confirm="confirmResetTime"
 			default-time="00:00:00">
 		</u-picker>
 	</view>
@@ -45,10 +51,11 @@
 					minute: true,
 					second: true
 				},
-				// 是否显示时间选择器
-				showTimePicker: {
-					work: false,
-					reset: false,
+				// 是否显示时间选择器、输入计时器标题对话框
+				show: {
+					workTimePicker: false,
+					reseTimetPicker: false,
+					inputTimerTitleModal: false,
 				},
 				// 循环次数
 				cycleTimes: 1,
@@ -57,12 +64,10 @@
 					work: 0,
 					reset: 0
 				},
-				// 展示的时间
-				// showTime: {
-				// 	work: '请设置工作时间',
-				// 	reset: '请设置休息时间',
-				// },
+				// 本地存储中的计时器应用相关数据
 				timerStorage: {},
+				// 定时器标题
+				timerTitle:'',
 			};
 		},
 		onLoad() {
@@ -80,7 +85,7 @@
 				let m = parseInt(seconds / 60) >= 60 ? parseInt(seconds / 60) % 60 : parseInt(seconds / 60)
 				m = m < 10 ? '0' + m : m
 				let s = (seconds % 60) < 10 ? '0' + parseInt(seconds % 60) : parseInt(seconds % 60)
-				
+
 				return h + ':' + m + ':' + s
 			},
 			// 确认工作时间选择器
@@ -131,11 +136,14 @@
 					let intervalTimer = uni.getStorageSync('interval-timer')
 					intervalTimer.currentTimer = this.timer
 					uni.setStorageSync('interval-timer', intervalTimer)
-					
-					console.log(this.timer)
+
+					this.show.inputTimerTitleModal = true
 				}
 
 			},
+			inputTimerTitle(){
+				console.log(e)
+			}
 		},
 		computed: {
 			timer() {
