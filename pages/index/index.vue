@@ -82,8 +82,43 @@
 				this.time.work = timer.workTime
 				this.time.reset = timer.resetTime
 			}
+			
+			const obj1 = {
+				name:'123',
+				id:456
+			}
+			
+			const obj2 = {
+				id:456,
+				name:'123',
+				
+			}
+			
+			const result = this.isObjectEqual(obj1,obj2)
+			
+			console.log(result)
 		},
 		methods: {
+			isObjectEqual(obj1, obj2) {
+				const obj1Keys = Object.keys(obj1)
+				const obj2Keys = Object.keys(obj2)
+
+				if (obj1Keys.length !== obj2Keys.length) {
+					return false
+				}
+
+				for (let index = 0; index < obj1Keys.length; index++) {
+					const value1 = obj1[obj1Keys[index]]
+					const value2 = obj2[obj2Keys[index]]
+
+					if (value1 !== value2) {
+						return false
+					}
+				}
+
+				return true
+
+			},
 			secondsToString(seconds) {
 				let h = (seconds / 3600) < 10 ? '0' + parseInt(seconds / 3600) : parseInt(seconds / 3600)
 				let m = parseInt(seconds / 60) >= 60 ? parseInt(seconds / 60) % 60 : parseInt(seconds / 60)
@@ -145,9 +180,23 @@
 				}
 
 			},
-			inputTimerTitle() {
-				console.log(e)
-			}
+			confirmInputTimerTitle() {
+				if (this.timerTitle.trim() === '') {
+					this.$u.toast('计时器标题不能为空')
+				} else {
+					let intervalTimerStorage = uni.getStorageSync('interval-timer')
+					let timerList = intervalTimerStorage.timerList
+
+
+					this.closeInputTimerTitle()
+				}
+
+			},
+			closeInputTimerTitle() {
+				this.timerTitle = ''
+				this.show.inputTimerTitleModal = false
+			},
+
 		},
 		computed: {
 			timer() {
