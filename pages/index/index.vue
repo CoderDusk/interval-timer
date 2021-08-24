@@ -25,9 +25,13 @@
 		</view>
 
 		<!-- 输入计时器标题的弹出层 -->
-		<u-popup v-model="show.inputTimerTitleModal" mode="center">
+		<!-- <u-popup v-model="show.inputTimerTitleModal" mode="center">
 			<u-input placeholder="请输入计时器标题" v-model="timerTitle"></u-input>
-		</u-popup>
+		</u-popup> -->
+		<u-modal v-model="show.inputTimerTitleModal" title="计时器标题" show-cancel-button>
+			<u-input placeholder="请输入计时器标题" v-model="timerTitle" placeholder-style="padding-left:20rpx;" trim
+				class="timer-title-input" :clearable="false" spellcheck="false"></u-input>
+		</u-modal>
 
 		<!-- 不显示的内容 -->
 		<!-- 工作时间选择器 -->
@@ -67,7 +71,7 @@
 				// 本地存储中的计时器应用相关数据
 				timerStorage: {},
 				// 定时器标题
-				timerTitle:'',
+				timerTitle: '',
 			};
 		},
 		onLoad() {
@@ -141,7 +145,7 @@
 				}
 
 			},
-			inputTimerTitle(){
+			inputTimerTitle() {
 				console.log(e)
 			}
 		},
@@ -212,5 +216,23 @@
 		font-size: 15px;
 		text-align: center;
 		padding: 0 15px;
+	}
+
+	.timer-title-input {
+		margin: 20rpx 30rpx;
+		border: 1px solid gray;
+		border-radius: 10rpx;
+		padding-left: 20rpx;
+		// background-color: pink;
+
+
+		/deep/ .uni-input-input {
+			padding-left: 20rpx;
+		}
+
+
+		// /deep/ ::placeholder {
+		//   color: red;
+		// }
 	}
 </style>
