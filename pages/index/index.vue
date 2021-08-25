@@ -25,9 +25,6 @@
 		</view>
 
 		<!-- 输入计时器标题的弹出层 -->
-		<!-- <u-popup v-model="show.inputTimerTitleModal" mode="center">
-			<u-input placeholder="请输入计时器标题" v-model="timerTitle"></u-input>
-		</u-popup> -->
 		<u-modal v-model="show.inputTimerTitleModal" title="计时器标题" show-cancel-button>
 			<u-input placeholder="请输入计时器标题" v-model="timerTitle" placeholder-style="padding-left:20rpx;" trim
 				class="timer-title-input" :clearable="false" spellcheck="false"></u-input>
@@ -89,7 +86,7 @@
 			}
 			
 			const obj2 = {
-				id:456,
+				id:457,
 				name:'123',
 				
 			}
@@ -102,22 +99,20 @@
 			isObjectEqual(obj1, obj2) {
 				const obj1Keys = Object.keys(obj1)
 				const obj2Keys = Object.keys(obj2)
+				
+				let result = true
 
 				if (obj1Keys.length !== obj2Keys.length) {
-					return false
+					result = false
 				}
-
-				for (let index = 0; index < obj1Keys.length; index++) {
-					const value1 = obj1[obj1Keys[index]]
-					const value2 = obj2[obj2Keys[index]]
-
-					if (value1 !== value2) {
-						return false
+				
+				obj1Keys.forEach(keyName=>{
+					if(obj1[keyName] !== obj2[keyName]){
+						result = false
 					}
-				}
-
-				return true
-
+				})
+				
+				return result
 			},
 			secondsToString(seconds) {
 				let h = (seconds / 3600) < 10 ? '0' + parseInt(seconds / 3600) : parseInt(seconds / 3600)
