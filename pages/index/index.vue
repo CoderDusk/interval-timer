@@ -25,7 +25,8 @@
 		</view>
 
 		<!-- 输入计时器标题的弹出层 -->
-		<u-modal v-model="show.inputTimerTitleModal" title="计时器标题" show-cancel-button>
+		<u-modal v-model="show.inputTimerTitleModal" @confirm="confirmInputTimerTitle()" title="计时器标题"
+			show-cancel-button>
 			<u-input placeholder="请输入计时器标题" v-model="timerTitle" placeholder-style="padding-left:20rpx;" trim
 				class="timer-title-input" :clearable="false" spellcheck="false"></u-input>
 		</u-modal>
@@ -79,39 +80,16 @@
 				this.time.work = timer.workTime
 				this.time.reset = timer.resetTime
 			}
-			
-			const obj1 = {
-				name:'123',
-				id:456
-			}
-			
-			const obj2 = {
-				id:457,
-				name:'123',
-				
-			}
-			
-			const result = this.isObjectEqual(obj1,obj2)
-			
-			console.log(result)
 		},
 		methods: {
-			isObjectEqual(obj1, obj2) {
-				const obj1Keys = Object.keys(obj1)
-				const obj2Keys = Object.keys(obj2)
-				
-				let result = true
-
-				if (obj1Keys.length !== obj2Keys.length) {
-					result = false
+			isTimerEqual(timer1, timer2) {
+				if (timer1.cycleTimes === timer2.cycleTimes && timer1.workTime === timer2.workTime && timer1.resetTime ===
+					timer2.resetTime) {
+					return true
+				}else{
+					return false
 				}
-				
-				obj1Keys.forEach(keyName=>{
-					if(obj1[keyName] !== obj2[keyName]){
-						result = false
-					}
-				})
-				
+
 				return result
 			},
 			secondsToString(seconds) {
@@ -179,8 +157,26 @@
 				if (this.timerTitle.trim() === '') {
 					this.$u.toast('计时器标题不能为空')
 				} else {
+					const timerObj = {
+						title: this.timerTitle,
+						timestamp: new Date().getTime(),
+						cycleTimes: this.cycleTimes,
+						workTime: this.time.work,
+						resetTime: this.time.reset
+					}
+
 					let intervalTimerStorage = uni.getStorageSync('interval-timer')
 					let timerList = intervalTimerStorage.timerList
+					let isExisted = false
+					timerList.forEach(item => {
+						if (this.isObjectEqual(item, timerObj)) {
+							isExisted = false
+						}
+					})
+
+					if (isExisted) {
+						this.$u.toast('这个计时器已经存在，无需重复保存')
+					}
 
 
 					this.closeInputTimerTitle()
