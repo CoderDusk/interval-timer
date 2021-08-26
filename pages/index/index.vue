@@ -70,10 +70,14 @@
 				timerStorage: {},
 				// 定时器标题
 				timerTitle: '',
+				// 定时器列表
+				timerList:[]
 			};
 		},
 		onLoad() {
 			this.timerStorage = uni.getStorageSync('interval-timer')
+			this.timerList = this.timerStorage.timerList
+			
 			if (this.timerStorage.currentTimer !== undefined) {
 				const timer = this.timerStorage.currentTimer
 				this.cycleTimes = timer.cycleTimes
@@ -83,13 +87,13 @@
 		},
 		methods: {
 			isTimerEqual(timer1, timer2) {
-				if (timer1.cycleTimes === timer2.cycleTimes && timer1.workTime === timer2.workTime && timer1.resetTime ===
-					timer2.resetTime) {
-					return true
-				}else{
-					return false
-				}
+				let result = false
 
+				if (timer1.cycleTimes === timer2.cycleTimes && timer1.workTime === timer2.workTime && timer1.resetTime ===
+					timer2.resetTime && timer1.title === timer2.title) {
+					result = true
+					
+				}
 				return result
 			},
 			secondsToString(seconds) {
@@ -167,17 +171,27 @@
 
 					let intervalTimerStorage = uni.getStorageSync('interval-timer')
 					let timerList = intervalTimerStorage.timerList
+					if (timerList == undefined) {
+						timerList = []
+					}
 					let isExisted = false
+
+
 					timerList.forEach(item => {
-						if (this.isObjectEqual(item, timerObj)) {
-							isExisted = false
+						if (this.isTimerEqual(item, timerObj)) {
+							isExisted = true
 						}
 					})
 
 					if (isExisted) {
 						this.$u.toast('这个计时器已经存在，无需重复保存')
+						return 
+					}else{
+						timerList.push(timerObj)
+						intervalTimerStorage.timerList = timerList
+						uni.setStorageSync('interval-timer',intervalTimerStorage)
+						this.$u.toast('保存成功')
 					}
-
 
 					this.closeInputTimerTitle()
 				}
