@@ -24,6 +24,22 @@
 			</u-button>
 		</view>
 
+
+
+		<view class="timer-list">
+			<block v-for="item in timerList" :key="item.timestamp">
+				<view class="timer-item" @click="readTimer(item)">
+					<view class="left">{{item.title}}</view>
+					<view class="right">
+						<view>循环：{{item.cycleTimes}}次</view>
+						<view>工作时间：{{secondsToString(item.workTime)}}</view>
+						<view>休息时间：{{secondsToString(item.resetTime)}}</view>
+					</view>
+				</view>
+			</block>
+		</view>
+
+
 		<!-- 输入计时器标题的弹出层 -->
 		<u-modal v-model="show.inputTimerTitleModal" @confirm="confirmInputTimerTitle()" title="计时器标题"
 			show-cancel-button>
@@ -71,13 +87,12 @@
 				// 定时器标题
 				timerTitle: '',
 				// 定时器列表
-				timerList:[]
+				timerList: []
 			};
 		},
 		onLoad() {
-			this.timerStorage = uni.getStorageSync('interval-timer')
-			this.timerList = this.timerStorage.timerList
-			
+			this.getTimerStorage()
+
 			if (this.timerStorage.currentTimer !== undefined) {
 				const timer = this.timerStorage.currentTimer
 				this.cycleTimes = timer.cycleTimes
@@ -92,9 +107,30 @@
 				if (timer1.cycleTimes === timer2.cycleTimes && timer1.workTime === timer2.workTime && timer1.resetTime ===
 					timer2.resetTime && timer1.title === timer2.title) {
 					result = true
-					
+
 				}
 				return result
+			},
+			getTimerStorage() {
+				this.timerStorage = uni.getStorageSync('interval-timer')
+				this.timerList = this.timerStorage.timerList
+
+				function compare(property) {
+					return function(obj1, obj2) {
+						let value1 = obj1[property];
+						let value2 = obj2[property];
+						
+						if (value1 > value2) {
+							return -1;
+						}
+						if (value1 < value2) {
+							return 1;
+						}
+						return 0;
+					};
+				}
+				
+				this.timerList = this.timerList.sort(compare("timestamp"))
 			},
 			secondsToString(seconds) {
 				let h = (seconds / 3600) < 10 ? '0' + parseInt(seconds / 3600) : parseInt(seconds / 3600)
@@ -185,11 +221,11 @@
 
 					if (isExisted) {
 						this.$u.toast('这个计时器已经存在，无需重复保存')
-						return 
-					}else{
+						return
+					} else {
 						timerList.push(timerObj)
 						intervalTimerStorage.timerList = timerList
-						uni.setStorageSync('interval-timer',intervalTimerStorage)
+						uni.setStorageSync('interval-timer', intervalTimerStorage)
 						this.$u.toast('保存成功')
 					}
 
@@ -200,6 +236,15 @@
 			closeInputTimerTitle() {
 				this.timerTitle = ''
 				this.show.inputTimerTitleModal = false
+			},
+			readSavedTimer(timer){
+				console.log(timer)
+				this.cycleTimes = timer.cycleTimes
+				this.time.work = timer.workTime
+				this.time.reset = timer.resetTime
+			},
+			setCurrentTimer(){
+				
 			},
 
 		},
@@ -226,11 +271,11 @@
 		background-color: $u-bg-color;
 		max-width: 420px;
 		margin: 0 auto;
+		padding: 30rpx;
 	}
 
 	.timer-setting {
 		background-color: white;
-		margin: 15px;
 
 		.title {
 			font-size: 24px;
@@ -277,16 +322,30 @@
 		border: 1px solid gray;
 		border-radius: 10rpx;
 		padding-left: 20rpx;
-		// background-color: pink;
-
 
 		/deep/ .uni-input-input {
 			padding-left: 20rpx;
 		}
+	}
 
+	.timer-list {
+		margin-top: 40rpx;
 
-		// /deep/ ::placeholder {
-		//   color: red;
-		// }
+		.timer-item {
+			background-color: white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 20rpx 30rpx;
+			margin-bottom: 20rpx;
+			border-radius: 10rpx;
+			
+			.left {
+				font-size: 36rpx;
+				font-weight: bold;
+			}
+		}
+
+		
 	}
 </style>
