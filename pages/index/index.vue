@@ -101,6 +101,16 @@
 			}
 		},
 		methods: {
+			// 将秒数转换成格式化的时间字符串
+			secondsToString(seconds) {
+				let h = (seconds / 3600) < 10 ? '0' + parseInt(seconds / 3600) : parseInt(seconds / 3600)
+				let m = parseInt(seconds / 60) >= 60 ? parseInt(seconds / 60) % 60 : parseInt(seconds / 60)
+				m = m < 10 ? '0' + m : m
+				let s = (seconds % 60) < 10 ? '0' + parseInt(seconds % 60) : parseInt(seconds % 60)
+			
+				return h + ':' + m + ':' + s
+			},
+			// 判断两个计时器是否相等
 			isTimerEqual(timer1, timer2) {
 				let result = false
 
@@ -111,35 +121,28 @@
 				}
 				return result
 			},
+			// 比较通过比较两个对象的指定属性的数值大小，比较两个对象的大小
+			compareObjectByProperty(property) {
+				return function(obj1, obj2) {
+					let value1 = obj1[property];
+					let value2 = obj2[property];
+					
+					if (value1 > value2) {
+						return -1;
+					}
+					if (value1 < value2) {
+						return 1;
+					}
+					return 0;
+				};
+			},
+			// 获取本地存储中的计时器
 			getTimerStorage() {
 				this.timerStorage = uni.getStorageSync('interval-timer')
 				this.timerList = this.timerStorage.timerList
-
-				function compare(property) {
-					return function(obj1, obj2) {
-						let value1 = obj1[property];
-						let value2 = obj2[property];
-						
-						if (value1 > value2) {
-							return -1;
-						}
-						if (value1 < value2) {
-							return 1;
-						}
-						return 0;
-					};
-				}
-				
-				this.timerList = this.timerList.sort(compare("timestamp"))
+				this.timerList = this.timerList.sort(this.compareObjectByProperty("timestamp"))
 			},
-			secondsToString(seconds) {
-				let h = (seconds / 3600) < 10 ? '0' + parseInt(seconds / 3600) : parseInt(seconds / 3600)
-				let m = parseInt(seconds / 60) >= 60 ? parseInt(seconds / 60) % 60 : parseInt(seconds / 60)
-				m = m < 10 ? '0' + m : m
-				let s = (seconds % 60) < 10 ? '0' + parseInt(seconds % 60) : parseInt(seconds % 60)
-
-				return h + ':' + m + ':' + s
-			},
+			
 			// 确认工作时间选择器
 			confirmWorkTime(e) {
 				const time = e.hour * 3600 + e.minute * 60 + e.second * 1
@@ -183,6 +186,7 @@
 					})
 				}
 			},
+			// 保存计时器
 			saveTimer() {
 				if (this.validateTimer()) {
 					let intervalTimer = uni.getStorageSync('interval-timer')
@@ -193,6 +197,7 @@
 				}
 
 			},
+			// 确认输入计时器标题
 			confirmInputTimerTitle() {
 				if (this.timerTitle.trim() === '') {
 					this.$u.toast('计时器标题不能为空')
@@ -233,17 +238,23 @@
 				}
 
 			},
+			// 关闭输入计时器标题的对话框并清除标题值
 			closeInputTimerTitle() {
 				this.timerTitle = ''
 				this.show.inputTimerTitleModal = false
 			},
+			// 读取一个当前已保存的计时器
 			readSavedTimer(timer){
 				console.log(timer)
 				this.cycleTimes = timer.cycleTimes
 				this.time.work = timer.workTime
 				this.time.reset = timer.resetTime
 			},
+			// 设置当前计时器
 			setCurrentTimer(){
+				// 设置本地存储中的当前计时器
+				
+				// 设置当前页面的当前计时器
 				
 			},
 
