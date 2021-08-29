@@ -8,11 +8,11 @@
 				<u-number-box v-model="cycleTimes" :min="1"></u-number-box>
 
 				<view class="group-name">工作</view>
-				<view @click="show.workTimePicker = true" class="timer-show">{{showTime.work}}</view>
+				<view @click="show.workTimePicker = true" class="timer-show">{{secondsToString(time.work)}}</view>
 
 
 				<view class="group-name">休息</view>
-				<view @click="show.reseTimetPicker = true" class="timer-show">{{ showTime.reset }}</view>
+				<view @click="show.reseTimetPicker = true" class="timer-show">{{ secondsToString(time.reset) }}</view>
 
 			</view>
 			<u-button class="start-button" type="primary" @click="startTimer">
@@ -27,8 +27,8 @@
 
 
 		<view class="timer-list">
-			<block v-for="item in timerList" :key="item.timestamp">
-				<view class="timer-item" @click="readTimer(item)">
+			<block v-for="(item,index) in timerList" :key="item.timestamp">
+				<view class="timer-item" @click="readSavedTimer(item)" @longpress="handleLongPressTimerItem(index)">
 					<view class="left">{{item.title}}</view>
 					<view class="right">
 						<view>循环：{{item.cycleTimes}}次</view>
@@ -93,12 +93,12 @@
 		onLoad() {
 			this.getTimerStorage()
 
-			if (this.timerStorage.currentTimer !== undefined) {
-				const timer = this.timerStorage.currentTimer
-				this.cycleTimes = timer.cycleTimes
-				this.time.work = timer.workTime
-				this.time.reset = timer.resetTime
-			}
+			// if (this.timerStorage.currentTimer !== undefined) {
+			// 	const timer = this.timerStorage.currentTimer
+			// 	this.cycleTimes = timer.cycleTimes
+			// 	this.time.work = timer.workTime
+			// 	this.time.reset = timer.resetTime
+			// }
 		},
 		methods: {
 			// 将秒数转换成格式化的时间字符串
@@ -107,8 +107,8 @@
 				let m = parseInt(seconds / 60) >= 60 ? parseInt(seconds / 60) % 60 : parseInt(seconds / 60)
 				m = m < 10 ? '0' + m : m
 				let s = (seconds % 60) < 10 ? '0' + parseInt(seconds % 60) : parseInt(seconds % 60)
-			
-				return h + ':' + m + ':' + s
+
+				return h + ' : ' + m + ' : ' + s
 			},
 			// 判断两个计时器是否相等
 			isTimerEqual(timer1, timer2) {
@@ -126,7 +126,7 @@
 				return function(obj1, obj2) {
 					let value1 = obj1[property];
 					let value2 = obj2[property];
-					
+
 					if (value1 > value2) {
 						return -1;
 					}
@@ -139,10 +139,20 @@
 			// 获取本地存储中的计时器
 			getTimerStorage() {
 				this.timerStorage = uni.getStorageSync('interval-timer')
-				this.timerList = this.timerStorage.timerList
-				this.timerList = this.timerList.sort(this.compareObjectByProperty("timestamp"))
+				const {
+					currentTimer,
+					timerList
+				} = this.timerStorage
+				
+				this.timerList = timerList.sort(this.compareObjectByProperty("timestamp"))
+				
+				if(currentTimer !== undefined){
+					this.cycleTimes = currentTimer.cycleTimes
+					this.time.wrok = currentTimer.workTime
+					this.time.reset = currentTimer.resetTime
+				}				
 			},
-			
+
 			// 确认工作时间选择器
 			confirmWorkTime(e) {
 				const time = e.hour * 3600 + e.minute * 60 + e.second * 1
@@ -150,7 +160,7 @@
 					this.$u.toast('请设置有效的时间')
 				} else {
 					this.time.work = time
-					this.showTime.work = `${e.hour} : ${e.minute} : ${e.second}`
+
 				}
 			},
 			// 确认休息时间选择器
@@ -160,7 +170,7 @@
 					this.$u.toast('请设置有效的时间')
 				} else {
 					this.time.reset = time
-					this.showTime.reset = `${e.hour} : ${e.minute} : ${e.second}`
+
 				}
 			},
 			// 验证计时器
@@ -235,6 +245,7 @@
 					}
 
 					this.closeInputTimerTitle()
+					this.getTimerStorage()
 				}
 
 			},
@@ -244,18 +255,33 @@
 				this.show.inputTimerTitleModal = false
 			},
 			// 读取一个当前已保存的计时器
-			readSavedTimer(timer){
+			readSavedTimer(timer) {
 				console.log(timer)
 				this.cycleTimes = timer.cycleTimes
 				this.time.work = timer.workTime
 				this.time.reset = timer.resetTime
 			},
 			// 设置当前计时器
-			setCurrentTimer(){
+			setCurrentTimer() {
 				// 设置本地存储中的当前计时器
-				
+
 				// 设置当前页面的当前计时器
-				
+
+			},
+			handleLongPressTimerItem(index){
+				uni.showModal({
+				    title: '警告',
+				    content: '您确认要删除这个计时器吗',
+				    success:  res => {
+				        if (res.confirm) {
+				            this.timerList.splice(index,1)
+							this.timerStorage.timerList = this.timerList
+							uni.setStorageSync('interval-timer',this.timerStorage)
+							this.getTimerStorage()
+							this.$u.toast('删除成功')
+				        }
+				    }
+				});
 			},
 
 		},
@@ -267,17 +293,20 @@
 					resetTime: this.time.reset,
 				}
 			},
-			showTime() {
-				return {
-					work: this.time.work === 0 ? '请设置工作时间' : this.secondsToString(this.time.work),
-					reset: this.time.reset === 0 ? '请设置休息时间' : this.secondsToString(this.time.reset)
-				}
-			}
 		}
 	}
 </script>
 
-<style lang="scss">
+<style>
+	page {
+		background-color: $u-bg-color;
+		max-width: 420px;
+		margin: 0 auto;
+		padding: 30rpx;
+	}
+</style>
+
+<style lang="scss" scoped>
 	page {
 		background-color: $u-bg-color;
 		max-width: 420px;
@@ -350,13 +379,13 @@
 			padding: 20rpx 30rpx;
 			margin-bottom: 20rpx;
 			border-radius: 10rpx;
-			
+
 			.left {
 				font-size: 36rpx;
 				font-weight: bold;
 			}
 		}
 
-		
+
 	}
 </style>

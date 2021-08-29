@@ -56,25 +56,56 @@
 				timerName:'做好准备',
 				isWork:false,
 				isReady:true,
-				isPaused:false,
+				// isPaused:false,
+				isPaused:true,
 				pausedCount:0,
 				pausedTimer:0,
 				pausedMinute:0,
 				pausedSecond:0
 			};
 		},
-		onLoad: function (option) {
-			this.count = option.count
-			this.work = option.work
-			this.reset = option.reset
-			// this.timer = this.work
-			this.audio = uni.createInnerAudioContext()
-			// audio.autoplay = true
-			this.audio.src= "../../static/high.mp3"
-			this.audio.loop = true
-			this.audio.puased = this.playState
+		onLoad(){
+			this.initTimer()
 		},
+		
 		methods:{
+			initTimer(){		
+				const {currentTimer:{cycleTimes,workTime,resetTime}} = uni.getStorageSync('interval-timer')
+				
+				
+				if(workTime === 0 || resetTime === 0 ){
+					this.$u.toast('定时器时间不能为空')
+					uni.navigateTo({
+						url:'../index/index'
+					})
+				}else{
+					this.count = cycleTimes
+					this.work = workTime
+					this.reset = resetTime
+					
+					this.audio = uni.createInnerAudioContext()
+					this.audio.src= "../../static/high.mp3"
+					// this.audio.autoplay = true
+					// this.audio.stop()
+					this.audio.loop = true
+					this.audio.puased = this.playState
+				}
+			},
+			getTimerStorage() {
+				this.timerStorage = uni.getStorageSync('interval-timer')
+				const {
+					currentTimer,
+					timerList
+				} = this.timerStorage
+				
+				this.timerList = timerList.sort(this.compareObjectByProperty("timestamp"))
+				
+				if(currentTimer !== undefined){
+					this.cycleTimes = currentTimer.cycleTimes
+					this.time.wrok = currentTimer.workTime
+					this.time.reset = currentTimer.resetTime
+				}				
+			},
 			volumeChange(){
 				this.audio.volume = (this.volume)/100
 			},
@@ -129,12 +160,19 @@
 	}
 </script>
 
-<style lang="scss">
+<style>
 	page {
-		background-color: #19BE6B;
-		padding:10px;
-		height: 100%;
+		max-width: 420px;
+		margin: 0 auto;
 	}
+</style>
+
+<style lang="scss" scoped>
+	// page {
+	// 	background-color: #19BE6B;
+	// 	padding:10px;
+	// 	height: 100%;
+	// }
 	
 	.main{
 		// display: flex;
