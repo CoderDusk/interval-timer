@@ -70,8 +70,7 @@
 		
 		methods:{
 			initTimer(){		
-				const {currentTimer:{cycleTimes,workTime,resetTime}} = uni.getStorageSync('interval-timer')
-				
+				const {currentTimer:{cycleTimes,workTime,resetTime}} = uni.getStorageSync('interval-timer')				
 				
 				if(workTime === 0 || resetTime === 0 ){
 					this.$u.toast('定时器时间不能为空')
@@ -163,21 +162,17 @@
 <style>
 	page {
 		max-width: 420px;
+		/* width: 800px; */
 		margin: 0 auto;
+		background-color: #19BE6B;
+		height: 100%;
 	}
 </style>
 
-<style lang="scss" scoped>
-	// page {
-	// 	background-color: #19BE6B;
-	// 	padding:10px;
-	// 	height: 100%;
-	// }
-	
+<style lang="scss" scoped>	
 	.main{
-		// display: flex;
-		// flex-direction: column;
 		height: 100%;
+		position: relative;
 	}
 	
 	.timer{
@@ -208,10 +203,6 @@
 		font-size: 200rpx;
 		color: white;
 	}
-	
-	// .u-countdown-colon{
-	// 	padding: 0;
-	// }
 	
 	[class^="u-countdown-colon"]{
 		padding-left: 0;

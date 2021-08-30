@@ -5,7 +5,10 @@
 			<view class="number-box">
 
 				<view class="group-name">循环次数</view>
-				<u-number-box v-model="cycleTimes" :min="1"></u-number-box>
+				<u-number-box v-model="cycleTimes" :min="1" @plus="numberBoxPlus()"></u-number-box>
+				<!-- <u-keyboard ref="uKeyboard" v-model="show.cycleTimesKeyboard" @confirm="confirmCycleTimesKeyboard"></u-keyboard> -->
+				<!-- <u-button @click="show.cycleTimesKeyboard = true">请输入循环次数</u-button> -->
+				<!-- <u-input type="number" border placeholder="请输入循环次数"></u-input> -->
 
 				<view class="group-name">工作</view>
 				<view @click="show.workTimePicker = true" class="timer-show">{{secondsToString(time.work)}}</view>
@@ -74,6 +77,7 @@
 					workTimePicker: false,
 					reseTimetPicker: false,
 					inputTimerTitleModal: false,
+					cycleTimesKeyboard:false,
 				},
 				// 循环次数
 				cycleTimes: 1,
@@ -92,13 +96,6 @@
 		},
 		onLoad() {
 			this.getTimerStorage()
-
-			// if (this.timerStorage.currentTimer !== undefined) {
-			// 	const timer = this.timerStorage.currentTimer
-			// 	this.cycleTimes = timer.cycleTimes
-			// 	this.time.work = timer.workTime
-			// 	this.time.reset = timer.resetTime
-			// }
 		},
 		methods: {
 			// 将秒数转换成格式化的时间字符串
@@ -283,7 +280,16 @@
 				    }
 				});
 			},
-
+			numberBoxChange(e){
+				console.log(this.cycleTimes)
+			},
+			numberBoxPlus(e){
+				console.log(e)
+			},
+			confirmCycleTimesKeyboard(e){
+				console.log(e)
+			}
+			
 		},
 		computed: {
 			timer() {
@@ -308,7 +314,7 @@
 
 <style lang="scss" scoped>
 	page {
-		background-color: $u-bg-color;
+		// background-color: $u-bg-color;
 		max-width: 420px;
 		margin: 0 auto;
 		padding: 30rpx;
