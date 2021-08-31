@@ -5,10 +5,8 @@
 			<view class="number-box">
 
 				<view class="group-name">循环次数</view>
-				<u-number-box v-model="cycleTimes" :min="1" @plus="numberBoxPlus()"></u-number-box>
-				<!-- <u-keyboard ref="uKeyboard" v-model="show.cycleTimesKeyboard" @confirm="confirmCycleTimesKeyboard"></u-keyboard> -->
-				<!-- <u-button @click="show.cycleTimesKeyboard = true">请输入循环次数</u-button> -->
-				<!-- <u-input type="number" border placeholder="请输入循环次数"></u-input> -->
+				<!-- <u-number-box v-model="cycleTimes" :min="1"></u-number-box> -->
+				<u-input v-model="cycleTimes" type="number" input-align="center" border placeholder="请输入循环次数"></u-input>
 
 				<view class="group-name">工作</view>
 				<view @click="show.workTimePicker = true" class="timer-show">{{secondsToString(time.work)}}</view>
@@ -187,7 +185,7 @@
 			},
 			// 开始计时器
 			startTimer() {
-				if (this.validateTimer()) {
+				if(this.setCurrentTimer()){
 					uni.navigateTo({
 						url: "../timer/timer"
 					})
@@ -195,14 +193,19 @@
 			},
 			// 保存计时器
 			saveTimer() {
-				if (this.validateTimer()) {
-					let intervalTimer = uni.getStorageSync('interval-timer')
-					intervalTimer.currentTimer = this.timer
-					uni.setStorageSync('interval-timer', intervalTimer)
-
+				if(this.setCurrentTimer()){
 					this.show.inputTimerTitleModal = true
 				}
-
+			},
+			setCurrentTimer(){
+				if (this.validateTimer()) {
+					this.timerStorage.currentTimer = this.timer
+					uni.setStorageSync('interval-timer', this.timerStorage)
+					return true
+				}else{
+					this.$u.toast('当前计时器有误，请检查后再保存')
+					return false
+				}
 			},
 			// 确认输入计时器标题
 			confirmInputTimerTitle() {
@@ -253,17 +256,9 @@
 			},
 			// 读取一个当前已保存的计时器
 			readSavedTimer(timer) {
-				console.log(timer)
 				this.cycleTimes = timer.cycleTimes
 				this.time.work = timer.workTime
 				this.time.reset = timer.resetTime
-			},
-			// 设置当前计时器
-			setCurrentTimer() {
-				// 设置本地存储中的当前计时器
-
-				// 设置当前页面的当前计时器
-
 			},
 			handleLongPressTimerItem(index){
 				uni.showModal({
@@ -280,16 +275,6 @@
 				    }
 				});
 			},
-			numberBoxChange(e){
-				console.log(this.cycleTimes)
-			},
-			numberBoxPlus(e){
-				console.log(e)
-			},
-			confirmCycleTimesKeyboard(e){
-				console.log(e)
-			}
-			
 		},
 		computed: {
 			timer() {
