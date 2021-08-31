@@ -6,7 +6,7 @@
 					<u-icon name="volume-up-fill" color="black" size="56"></u-icon>
 				</u-col>
 				<u-col span="10">
-					<u-slider v-model="volume" @moving="volumeChange" block-width="30" class="volume-slider" inactive-color="black" active-color="black" block-color="black"></u-slider>
+					<u-slider v-model="ringtoneVolume" @moving="volumeChange" block-width="30" class="volume-slider" inactive-color="black" active-color="black" block-color="black"></u-slider>
 				</u-col>
 			</u-row>
 		</view>
@@ -23,20 +23,21 @@
 			</view>
 			
 			<view class="timer-name">
-				<view v-if="isReady">做好准备</view>
+				<view v-if="timerStatus === 'notReady'">做好准备</view>
+				<!-- <view v-else-if="timerStatus === 'paused'">暂停</view>
+				<view v-else-if="timerStatus === 'running'">暂停</view> -->
 				<view v-else>
-					<view v-if="isWork">工作</view>
-					<view v-else>休息</view>
+					{{timerName}}
 				</view>
 			</view>
 		</view>
 		
 		<view class="button" @click="pause">
-			<view v-if="playButton">
-				<svg t="1602074836570" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7325" width="48" height="48"><path d="M149.989688 874.093352a509.948138 509.948138 0 1 0-109.714286-162.700613 513.206978 513.206978 0 0 0 109.714286 162.700613z" fill="#2c2c2c" p-id="7326" data-spm-anchor-id="a313x.7781069.0.i11" class="selected"></path><path d="M429.646454 687.977369a57.331447 57.331447 0 0 0 27.277699 7.000472 60.348892 60.348892 0 0 0 32.829797-10.017916l175.977369-115.990571a68.677039 68.677039 0 0 0 30.777935-58.055634 66.504479 66.504479 0 0 0-29.812353-56.486563l-177.54644-115.749175a57.934936 57.934936 0 0 0-60.348892-3.017445 67.832155 67.832155 0 0 0-33.312588 60.348893V627.628477a67.470061 67.470061 0 0 0 34.157473 60.348892z" fill="#FFFFFF" p-id="7327"></path></svg>
+			<view v-if="timerStatus === 'paused'">
+				<u-icon name="pause-circle-fill" size="96"></u-icon>
 			</view>
-			<view v-else>
-				<svg t="1602077905261" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8188" width="48" height="48"><path d="M512 1024C229.23264 1024 0 794.76736 0 512S229.23264 0 512 0s512 229.23264 512 512-229.23264 512-512 512z" fill="#2c2c2c" p-id="8189" data-spm-anchor-id="a313x.7781069.0.i14" class="selected"></path><path d="M389.12 327.68a40.96 40.96 0 0 1 40.96 40.96v286.72a40.96 40.96 0 1 1-81.92 0V368.64a40.96 40.96 0 0 1 40.96-40.96z m245.76 0a40.96 40.96 0 0 1 40.96 40.96v286.72a40.96 40.96 0 1 1-81.92 0V368.64a40.96 40.96 0 0 1 40.96-40.96z" fill="#FFFFFF" p-id="8190"></path></svg>
+			<view v-else-if="timerStatus === 'running'">
+				<u-icon name="play-circle-fill" size="96"></u-icon>
 			</view>
 		</view>
 	</view>
@@ -63,7 +64,7 @@
 				pausedSecond:0,
 				
 				// 铃声音量
-				volume:30,
+				ringtoneVolume:30,
 				// 当前计时器
 				currentTimer:{
 					cycleTimes:1,
@@ -82,7 +83,7 @@
 			
 			this.audio = uni.createInnerAudioContext()
 			this.audio.src= "../../static/high.mp3"
-			this.audio.autoplay = true
+			this.audio.autoplay = false
 			this.audio.loop = true
 			// this.audio.puased = this.playState
 		},
@@ -124,7 +125,7 @@
 				}				
 			},
 			volumeChange(){
-				this.audio.volume = (this.volume)/100
+				this.audio.volume = (this.ringtoneVolume)/100
 			},
 			pause(){
 				this.playButton = !this.playButton
