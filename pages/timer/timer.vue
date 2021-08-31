@@ -1,6 +1,6 @@
 <template>
 	<view class="main">
-		<view class="volume">
+		<view class="volume-control">
 			<u-row>
 				<u-col span="2">
 					<u-icon name="volume-up-fill" color="black" size="56"></u-icon>
@@ -50,7 +50,6 @@
 				count:'',
 				work:'',
 				reset:'',
-				volume:30,
 				playButton:false,
 				audio:{},
 				timerName:'做好准备',
@@ -61,11 +60,31 @@
 				pausedCount:0,
 				pausedTimer:0,
 				pausedMinute:0,
-				pausedSecond:0
+				pausedSecond:0,
+				
+				// 铃声音量
+				volume:30,
+				// 当前计时器
+				currentTimer:{
+					cycleTimes:1,
+					workTime:0,
+					resetTime:0,
+				},
+				// 剩余循环次数
+				leftCycleTimes:0,
+				// 计时器状态
+				timerStatus:'paused'
 			};
 		},
 		onLoad(){
 			this.initTimer()
+			
+			
+			this.audio = uni.createInnerAudioContext()
+			this.audio.src= "../../static/high.mp3"
+			this.audio.autoplay = true
+			this.audio.loop = true
+			// this.audio.puased = this.playState
 		},
 		
 		methods:{
@@ -82,12 +101,11 @@
 					this.work = workTime
 					this.reset = resetTime
 					
-					this.audio = uni.createInnerAudioContext()
-					this.audio.src= "../../static/high.mp3"
+					// this.audio = uni.createInnerAudioContext()
+					// this.audio.src= "../../static/high.mp3"
 					// this.audio.autoplay = true
-					// this.audio.stop()
-					this.audio.loop = true
-					this.audio.puased = this.playState
+					// this.audio.loop = true
+					// this.audio.puased = this.playState
 				}
 			},
 			getTimerStorage() {
@@ -162,7 +180,6 @@
 <style>
 	page {
 		max-width: 420px;
-		/* width: 800px; */
 		margin: 0 auto;
 		background-color: #19BE6B;
 		height: 100%;
@@ -173,6 +190,7 @@
 	.main{
 		height: 100%;
 		position: relative;
+		padding: 20px;
 	}
 	
 	.timer{
@@ -191,6 +209,10 @@
 		.timer-name{
 			font-size: 50px;
 		}
+	}
+	
+	.volume-control{
+		// margin-top: 20px;
 	}
 	
 	.button{

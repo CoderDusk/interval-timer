@@ -145,7 +145,7 @@
 				
 				if(currentTimer !== undefined){
 					this.cycleTimes = currentTimer.cycleTimes
-					this.time.wrok = currentTimer.workTime
+					this.time.work = currentTimer.workTime
 					this.time.reset = currentTimer.resetTime
 				}				
 			},
@@ -314,7 +314,7 @@
 
 <style lang="scss" scoped>
 	page {
-		// background-color: $u-bg-color;
+		background-color: $u-bg-color;
 		max-width: 420px;
 		margin: 0 auto;
 		padding: 30rpx;
@@ -391,7 +391,5 @@
 				font-weight: bold;
 			}
 		}
-
-
-	}
+	}	
 </style>
