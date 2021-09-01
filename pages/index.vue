@@ -9,11 +9,11 @@
 				<u-input v-model="cycleTimes" type="number" input-align="center" border placeholder="请输入循环次数"></u-input>
 
 				<view class="group-name">工作</view>
-				<view @click="show.workTimePicker = true" class="timer-show">{{secondsToString(time.work)}}</view>
+				<view @click="show.workTimePicker = true" class="timer-show">{{$tools.secondsToString(time.work)}}</view>
 
 
 				<view class="group-name">休息</view>
-				<view @click="show.reseTimetPicker = true" class="timer-show">{{ secondsToString(time.reset) }}</view>
+				<view @click="show.reseTimetPicker = true" class="timer-show">{{ $tools.secondsToString(time.reset) }}</view>
 
 			</view>
 			<u-button class="start-button" type="primary" @click="startTimer">
@@ -33,8 +33,8 @@
 					<view class="left">{{item.title}}</view>
 					<view class="right">
 						<view>循环：{{item.cycleTimes}}次</view>
-						<view>工作时间：{{secondsToString(item.workTime)}}</view>
-						<view>休息时间：{{secondsToString(item.resetTime)}}</view>
+						<view>工作时间：{{$tools.secondsToString(item.workTime)}}</view>
+						<view>休息时间：{{$tools.secondsToString(item.resetTime)}}</view>
 					</view>
 				</view>
 			</block>
@@ -94,17 +94,9 @@
 		},
 		onLoad() {
 			this.getTimerStorage()
+			
 		},
 		methods: {
-			// 将秒数转换成格式化的时间字符串
-			secondsToString(seconds) {
-				let h = (seconds / 3600) < 10 ? '0' + parseInt(seconds / 3600) : parseInt(seconds / 3600)
-				let m = parseInt(seconds / 60) >= 60 ? parseInt(seconds / 60) % 60 : parseInt(seconds / 60)
-				m = m < 10 ? '0' + m : m
-				let s = (seconds % 60) < 10 ? '0' + parseInt(seconds % 60) : parseInt(seconds % 60)
-
-				return h + ' : ' + m + ' : ' + s
-			},
 			// 判断两个计时器是否相等
 			isTimerEqual(timer1, timer2) {
 				let result = false
@@ -187,7 +179,7 @@
 			startTimer() {
 				if(this.setCurrentTimer()){
 					uni.navigateTo({
-						url: "../timer/timer"
+						url: "timer"
 					})
 				}
 			},

@@ -12,6 +12,9 @@ const app = new Vue({
 import uView from "uview-ui";
 Vue.use(uView);
 
+import tools from 'common/tools.js'
+Vue.prototype.$tools = tools
+
 app.$mount()
 // #endif
 
