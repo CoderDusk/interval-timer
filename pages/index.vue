@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<view class="status-bar"></view>
 		<view class="timer-setting">
 			<view class="title">快速开始</view>
 			<view class="number-box">
@@ -16,13 +17,14 @@
 				<view @click="show.reseTimetPicker = true" class="timer-show">{{ $tools.secondsToString(time.reset) }}</view>
 
 			</view>
-			<u-button class="start-button" type="primary" @click="startTimer">
-				<u-icon class="start-icon" name="hourglass" color="white" size="42"></u-icon>开始
-			</u-button>
-
-			<u-button class="start-button" type="primary" plain @click="saveTimer()">
-				<u-icon class="start-icon" size="42" name="download"></u-icon>保存
-			</u-button>
+			
+			<view class="action-button start-button" @click="startTimer()">
+				<u-icon class="action-icon" name="hourglass" color="white" size="42"></u-icon>开始
+			</view>
+			
+			<view class="action-button save-button" @click="saveTimer()">
+				<u-icon class="action-icon" size="42" name="download"></u-icon>保存
+			</view>
 		</view>
 
 
@@ -280,24 +282,32 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	page {
 		background-color: $u-bg-color;
 		max-width: 420px;
 		margin: 0 auto;
+		
+		/* #ifdef H5 */
 		padding: 30rpx;
+		/* #endif */
+		
+		
+		
 	}
 </style>
 
 <style lang="scss" scoped>
-	page {
-		background-color: $u-bg-color;
-		max-width: 420px;
-		margin: 0 auto;
-		padding: 30rpx;
+	.status-bar{
+		background-color: white;
+		width: 100%;
+		height: var(--status-bar-height);
 	}
-
+	
 	.timer-setting {
+		/* #ifdef MP-WEIXIN */
+		// padding-top: 60rpx;
+		/* #endif */
 		background-color: white;
 
 		.title {
@@ -318,13 +328,27 @@
 		padding-bottom: 10px;
 	}
 
-	.start-button {
+	.action-button {
 		margin-top: 30px;
-		border-radius: 0;
+		display: flex;
+		justify-content: center;
+		padding: 20rpx;
+		font-size: 30rpx;
 
-		.start-icon {
+		.action-icon {
 			padding-right: 10px;
 		}
+	}
+	
+	.start-button{
+		background-color: #2979ff;
+		color: white;
+	}
+	
+	.save-button{
+		background-color: #ecf5ff;
+		color: #2979ff;
+		border: 1px solid #a0cfff;
 	}
 
 	.bottom-padding {

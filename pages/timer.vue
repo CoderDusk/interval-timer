@@ -1,15 +1,13 @@
 <template>
 	<view class="main">
+		<view class="status-bar"></view>
 		<view class="volume-control">
-			<u-row>
-				<u-col span="2">
-					<u-icon name="volume-up-fill" color="black" size="56"></u-icon>
-				</u-col>
-				<u-col span="10">
-					<u-slider v-model="ringtoneVolume" @moving="volumeChange" block-width="30" class="volume-slider"
-						inactive-color="black" active-color="black" block-color="black"></u-slider>
-				</u-col>
-			</u-row>
+			<span class="volume-icon"><u-icon name="volume-up-fill" color="black" size="56"></u-icon></span>
+			<span  class="volume-slider">
+				<u-slider v-model="ringtoneVolume" @moving="volumeChange" block-width="30"
+					inactive-color="black" active-color="black" block-color="black"></u-slider>
+			</span>
+			
 		</view>
 
 		<view class="timer">
@@ -159,10 +157,29 @@
 </style>
 
 <style lang="scss" scoped>
+	.status-bar{
+		background-color: #19BE6B;
+		width: 100%;
+		height: var(--status-bar-height);
+	}
+	
 	.main {
 		height: 100%;
 		position: relative;
-		padding: 20px;
+		padding: 40rpx;
+	}
+	
+	.volume-control{
+		display: flex;
+		align-items: center;
+		.volume-icon{
+			margin-right: 20rpx;
+		}
+		
+		.volume-slider{
+			width: 100%;
+			background-color: green;
+		}
 	}
 
 	.timer {
