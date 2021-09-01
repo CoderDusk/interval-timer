@@ -1,14 +1,30 @@
 <template>
 	<view class="main">
 		<view class="status-bar"></view>
-		<view class="volume-control">
-			<span class="volume-icon"><u-icon name="volume-up-fill" color="black" size="56"></u-icon></span>
-			<span  class="volume-slider">
-				<u-slider v-model="ringtoneVolume" @moving="volumeChange" block-width="30"
-					inactive-color="black" active-color="black" block-color="black"></u-slider>
+		<!--  #ifdef  MP-WEIXIN -->
+		<view class="volume-control mp-vlume-control"
+			:style="{'height':`${pillButtonInfo.height}px`,'width':`${pillButtonInfo.left}px`}">
+			<span class="volume-icon">
+				<u-icon name="volume-up-fill" color="black" size="56"></u-icon>
 			</span>
-			
+			<span class="volume-slider">
+				<u-slider v-model="ringtoneVolume" @moving="volumeChange" block-width="30" inactive-color="black"
+					active-color="black" block-color="black"></u-slider>
+			</span>
 		</view>
+		<!--  #endif -->
+		<!--  #ifdef  H5 || APP-PLUS -->
+		<view class="volume-control">
+			<span class="volume-icon">
+				<u-icon name="volume-up-fill" color="black" size="56"></u-icon>
+			</span>
+			<span class="volume-slider">
+				<u-slider v-model="ringtoneVolume" @moving="volumeChange" block-width="30" inactive-color="black"
+					active-color="black" block-color="black"></u-slider>
+			</span>
+		</view>
+		<!--  #endif -->
+
 
 		<view class="timer">
 			<view class="count-left">{{leftCycleTimes}}</view>
@@ -18,11 +34,12 @@
 				</view>
 				<view v-else-if="timerStatus === 'running'">
 					{{$tools.secondsToString(countDownLeftTime)}}
-					<view style="display: none;">
-						<u-count-down :timestamp="countDownLeftTime" :show-hours="true" font-size="120" bg-color="#19BE6B"
-							separator-size="120" @change="timerChange" ref="timer" :show-border="false"></u-count-down>
-					</view>
-					
+					<!-- <view style="display: none;">
+						<u-count-down :timestamp="countDownLeftTime" :show-hours="true" font-size="120"
+							bg-color="#19BE6B" separator-size="120" @change="timerChange" ref="timer"
+							:show-border="false"></u-count-down>
+					</view> -->
+
 				</view>
 			</view>
 
@@ -31,14 +48,30 @@
 			</view>
 		</view>
 
-		<view class="button">
+		<view class="button-group">
+			<view class="left">
+				<view @click="gotoIndexPage()">
+					<u-icon name="close-circle-fill" size="120"></u-icon>
+				</view>
+			</view>
+			<view class="right">
+				<view v-if="timerStatus === 'paused'" @click="continueTimer()">
+					<u-icon name="play-circle-fill" size="120"></u-icon>
+				</view>
+				<view v-else-if="timerStatus === 'running'" @click="pauseTimer()">
+					<u-icon name="pause-circle-fill" size="120"></u-icon>
+				</view>
+			</view>
+		</view>
+
+		<!-- <view class="button">
 			<view v-if="timerStatus === 'paused'" @click="continueTimer()">
 				<u-icon name="play-circle-fill" size="96"></u-icon>
 			</view>
 			<view v-else-if="timerStatus === 'running'" @click="pauseTimer()">
 				<u-icon name="pause-circle-fill" size="96"></u-icon>
 			</view>
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -49,7 +82,7 @@
 				// 铃声音频对象
 				ringtoneAudio: {},
 				// 铃声音量
-				ringtoneVolume: 30,
+				ringtoneVolume: 0,
 				// 当前计时器
 				currentTimer: {
 					cycleTimes: 1,
@@ -70,13 +103,58 @@
 				pauseTime: 0,
 				// 计时器标题
 				timerName: '工作',
+				// 胶囊按钮尺寸信息
+				pillButtonInfo: {},
+				// 定时器ID
+				timerID:'',
 			};
 		},
 		onLoad() {
+			// console.clear()
 			this.initTimer()
+			// #ifdef  MP-WEIXIN
+			this.pillButtonInfo = uni.getMenuButtonBoundingClientRect()
+			// #endif
 		},
 		beforeDestroy() {
 			this.ringtoneAudio.stop()
+		},
+		watch: {
+			countDownLeftTime(e) {
+				console.log('剩余秒数：' + e)
+				
+				if (e <= 5 && e > 0) {
+					
+					if(this.ringtoneAudio.paused){
+						this.ringtoneAudio.play()
+					}
+				}
+				
+				// if (e = 0) {
+				// 	this.ringtoneAudio.stop()					
+				// 	clearInterval(this.timerID)
+					
+				// 	if (this.timerName === '工作') {
+				// 		this.timerName = '休息'
+				// 		this.countDownLeftTime = this.resetTime
+				// 	} else if (this.timerName === '休息') {
+				// 		this.leftCycleTimes--
+				// 		if (this.leftCycleTimes === 0) {
+				// 			// uni.navigateTo({
+				// 			// 	url: 'index'
+				// 			// })
+				// 			this.gotoIndexPage()
+				// 		} else {
+				// 			this.timerName = '工作'
+				// 			this.countDownLeftTime = this.workTime
+				// 		}
+				// 	}
+					
+				// 	this.timerID = setInterval(()=>{
+				// 		this.countDownLeftTime--
+				// 	},1000)
+				// }
+			}
 		},
 		methods: {
 			initTimer() {
@@ -91,7 +169,7 @@
 				if (workTime === 0 || resetTime === 0) {
 					this.$u.toast('定时器时间不能为空')
 					uni.navigateTo({
-						url: '../index/index'
+						url: 'index'
 					})
 				} else {
 					this.leftCycleTimes = cycleTimes
@@ -101,8 +179,17 @@
 					this.countDownLeftTime = workTime
 					this.timerStatus = 'running'
 					
+					this.timerID = setInterval(()=>{
+						this.countDownLeftTime--
+					},1000)
+
 					this.ringtoneAudio = uni.createInnerAudioContext()
-					this.ringtoneAudio.src= "../static/high.mp3"
+					this.ringtoneAudio.src = "../static/high.mp3"
+					this.ringtoneAudio.volume = (this.ringtoneVolume) / 100
+					// #ifdef  MP-WEIXIN
+					this.ringtoneAudio.src =
+						"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6fec5402-1210-4b81-9949-97c1987784b9/9d7b1e3a-ac57-4f70-920c-1e1236c5a5ad.mp3"
+					// #endif
 					this.ringtoneAudio.autoplay = false
 					this.ringtoneAudio.loop = true
 				}
@@ -120,29 +207,24 @@
 				this.countDownLeftTime = this.pauseTime
 				this.timerStatus = 'running'
 			},
-			timerChange(e) {
-				this.countDownLeftTime = e
-				if(e<=5){
-					this.ringtoneAudio.play()
-				}
-				if (e === 0) {
-					this.ringtoneAudio.pause()
-					if (this.timerName === '工作') {
-						this.timerName = '休息'
-						this.countDownLeftTime = this.resetTime
-					} else if (this.timerName === '休息') {
-						this.leftCycleTimes--
-						if (this.leftCycleTimes === 0) {
-							uni.navigateTo({
-								url: 'index'
-							})
-						} else {
-							this.timerName = '工作'
-							this.countDownLeftTime = this.workTime
-						}
-					}
-				}
-			}
+			// timerChange(e) {
+			// 	if (e < 0) {
+			// 		e = 0
+			// 	}
+				
+			// 	console.log('倒计时参数:' + e)
+
+			// 	this.countDownLeftTime = e
+
+
+			// },
+			gotoIndexPage() {
+				this.countDownLeftTime = 0
+				this.ringtoneAudio.stop()
+				uni.navigateTo({
+					url: 'index'
+				})
+			},
 		}
 	}
 </script>
@@ -157,29 +239,42 @@
 </style>
 
 <style lang="scss" scoped>
-	.status-bar{
+	.status-bar {
 		background-color: #19BE6B;
 		width: 100%;
 		height: var(--status-bar-height);
 	}
-	
+
 	.main {
 		height: 100%;
 		position: relative;
-		padding: 40rpx;
 	}
-	
-	.volume-control{
+
+	.volume-control {
 		display: flex;
 		align-items: center;
-		.volume-icon{
+
+		/* #ifdef H5 || APP-PLUS */
+		padding: 40rpx;
+
+		/* #endif */
+		.volume-icon {
 			margin-right: 20rpx;
 		}
-		
-		.volume-slider{
+
+		.volume-slider {
 			width: 100%;
 			background-color: green;
 		}
+	}
+
+	.h5-volume-control {
+		// margin-top: 40rpx;
+		// width: 85%;
+	}
+
+	.mp-vlume-control {
+		padding: 0 30rpx;
 	}
 
 	.timer {
@@ -202,6 +297,15 @@
 		position: absolute;
 		right: 30px;
 		bottom: 30px;
+	}
+
+	.button-group {
+		position: absolute;
+		bottom: 30px;
+		width: 100%;
+
+		display: flex;
+		justify-content: space-around;
 	}
 
 	.pausedTimer {
