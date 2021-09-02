@@ -1,7 +1,8 @@
 <template>
 	<view>
+		<view class="status-bar"></view>
 		<view class="timer-setting">
-			<view class="title">快速开始</view>
+			<view class="title" :style="{'height':`${pillButtonInfo.height}px`}">快速开始</view>
 			<view class="number-box">
 
 				<view class="group-name">循环次数</view>
@@ -9,20 +10,23 @@
 				<u-input v-model="cycleTimes" type="number" input-align="center" border placeholder="请输入循环次数"></u-input>
 
 				<view class="group-name">工作</view>
-				<view @click="show.workTimePicker = true" class="timer-show">{{$tools.secondsToString(time.work)}}</view>
+				<view @click="show.workTimePicker = true" class="timer-show">{{$tools.secondsToString(time.work)}}
+				</view>
 
 
 				<view class="group-name">休息</view>
-				<view @click="show.reseTimetPicker = true" class="timer-show">{{ $tools.secondsToString(time.reset) }}</view>
+				<view @click="show.reseTimetPicker = true" class="timer-show">{{ $tools.secondsToString(time.reset) }}
+				</view>
 
 			</view>
-			<u-button class="start-button" type="primary" @click="startTimer">
-				<u-icon class="start-icon" name="hourglass" color="white" size="42"></u-icon>开始
-			</u-button>
 
-			<u-button class="start-button" type="primary" plain @click="saveTimer()">
-				<u-icon class="start-icon" size="42" name="download"></u-icon>保存
-			</u-button>
+			<view class="action-button start-button" @click="startTimer()">
+				<u-icon class="action-icon" name="hourglass" color="white" size="42"></u-icon>开始
+			</view>
+
+			<view class="action-button save-button" @click="saveTimer()">
+				<u-icon class="action-icon" size="42" name="download"></u-icon>保存
+			</view>
 		</view>
 
 
@@ -44,8 +48,10 @@
 		<!-- 输入计时器标题的弹出层 -->
 		<u-modal v-model="show.inputTimerTitleModal" @confirm="confirmInputTimerTitle()" title="计时器标题"
 			show-cancel-button>
-			<u-input placeholder="请输入计时器标题" v-model="timerTitle" placeholder-style="padding-left:20rpx;" trim
-				class="timer-title-input" :clearable="false" spellcheck="false"></u-input>
+			<view class="timer-title-input">
+				<u-input v-model="timerTitle" input-align="center" border placeholder="请输入计时器标题"></u-input>
+			</view>
+
 		</u-modal>
 
 		<!-- 不显示的内容 -->
@@ -64,6 +70,7 @@
 	export default {
 		data() {
 			return {
+				pillButtonInfo:{},
 				// 时间选择器参数
 				timePickerParams: {
 					hour: true,
@@ -75,7 +82,7 @@
 					workTimePicker: false,
 					reseTimetPicker: false,
 					inputTimerTitleModal: false,
-					cycleTimesKeyboard:false,
+					cycleTimesKeyboard: false,
 				},
 				// 循环次数
 				cycleTimes: 1,
@@ -94,7 +101,9 @@
 		},
 		onLoad() {
 			this.getTimerStorage()
-			
+			// #ifdef  MP-WEIXIN
+			this.pillButtonInfo = uni.getMenuButtonBoundingClientRect()
+			// #endif
 		},
 		methods: {
 			// 判断两个计时器是否相等
@@ -130,14 +139,14 @@
 					currentTimer,
 					timerList
 				} = this.timerStorage
-				
+
 				this.timerList = timerList.sort(this.compareObjectByProperty("timestamp"))
-				
-				if(currentTimer !== undefined){
+
+				if (currentTimer !== undefined) {
 					this.cycleTimes = currentTimer.cycleTimes
 					this.time.work = currentTimer.workTime
 					this.time.reset = currentTimer.resetTime
-				}				
+				}
 			},
 
 			// 确认工作时间选择器
@@ -177,7 +186,7 @@
 			},
 			// 开始计时器
 			startTimer() {
-				if(this.setCurrentTimer()){
+				if (this.setCurrentTimer()) {
 					uni.navigateTo({
 						url: "timer"
 					})
@@ -185,16 +194,16 @@
 			},
 			// 保存计时器
 			saveTimer() {
-				if(this.setCurrentTimer()){
+				if (this.setCurrentTimer()) {
 					this.show.inputTimerTitleModal = true
 				}
 			},
-			setCurrentTimer(){
+			setCurrentTimer() {
 				if (this.validateTimer()) {
 					this.timerStorage.currentTimer = this.timer
 					uni.setStorageSync('interval-timer', this.timerStorage)
 					return true
-				}else{
+				} else {
 					this.$u.toast('当前计时器有误，请检查后再保存')
 					return false
 				}
@@ -252,19 +261,19 @@
 				this.time.work = timer.workTime
 				this.time.reset = timer.resetTime
 			},
-			handleLongPressTimerItem(index){
+			handleLongPressTimerItem(index) {
 				uni.showModal({
-				    title: '警告',
-				    content: '您确认要删除这个计时器吗',
-				    success:  res => {
-				        if (res.confirm) {
-				            this.timerList.splice(index,1)
+					title: '警告',
+					content: '您确认要删除这个计时器吗',
+					success: res => {
+						if (res.confirm) {
+							this.timerList.splice(index, 1)
 							this.timerStorage.timerList = this.timerList
-							uni.setStorageSync('interval-timer',this.timerStorage)
+							uni.setStorageSync('interval-timer', this.timerStorage)
 							this.getTimerStorage()
 							this.$u.toast('删除成功')
-				        }
-				    }
+						}
+					}
 				});
 			},
 		},
@@ -280,30 +289,48 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	page {
 		background-color: $u-bg-color;
 		max-width: 420px;
 		margin: 0 auto;
+
+		/* #ifdef H5 */
 		padding: 30rpx;
+		/* #endif */
+
+
+
 	}
 </style>
 
 <style lang="scss" scoped>
-	page {
-		background-color: $u-bg-color;
-		max-width: 420px;
-		margin: 0 auto;
-		padding: 30rpx;
+	.status-bar {
+		background-color: white;
+		width: 100%;
+		height: var(--status-bar-height);
 	}
 
 	.timer-setting {
+		/* #ifdef MP-WEIXIN */
+		// padding-top: 60rpx;
+		/* #endif */
 		background-color: white;
 
 		.title {
-			font-size: 24px;
+			display: flex;
+			align-items: center;
+			font-size: 40rpx;
 			font-weight: bold;
-			padding: 15px;
+			
+			/* #ifdef H5 || APP-PLUS */
+			padding: 30rpx;
+			/* #endif */
+			
+			/* #ifdef MP-WEIXIN */
+			padding-left: 30rpx;
+			/* #endif */
+			
 		}
 
 		.number-box {
@@ -313,18 +340,36 @@
 		}
 	}
 
+	.input-timer-title-area {
+		background-color: pink;
+	}
+
 	.group-name {
 		padding-top: 20px;
 		padding-bottom: 10px;
 	}
 
-	.start-button {
+	.action-button {
 		margin-top: 30px;
-		border-radius: 0;
+		display: flex;
+		justify-content: center;
+		padding: 20rpx;
+		font-size: 30rpx;
 
-		.start-icon {
+		.action-icon {
 			padding-right: 10px;
 		}
+	}
+
+	.start-button {
+		background-color: #2979ff;
+		color: white;
+	}
+
+	.save-button {
+		background-color: #ecf5ff;
+		color: #2979ff;
+		border: 1px solid #a0cfff;
 	}
 
 	.bottom-padding {
@@ -342,13 +387,6 @@
 
 	.timer-title-input {
 		margin: 20rpx 30rpx;
-		border: 1px solid gray;
-		border-radius: 10rpx;
-		padding-left: 20rpx;
-
-		/deep/ .uni-input-input {
-			padding-left: 20rpx;
-		}
 	}
 
 	.timer-list {
@@ -368,5 +406,5 @@
 				font-weight: bold;
 			}
 		}
-	}	
+	}
 </style>
