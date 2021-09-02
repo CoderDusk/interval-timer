@@ -34,11 +34,11 @@
 				</view>
 				<view v-else-if="timerStatus === 'running'">
 					{{$tools.secondsToString(countDownLeftTime)}}
-					<!-- <view style="display: none;">
+					<view style="display: none;">
 						<u-count-down :timestamp="countDownLeftTime" :show-hours="true" font-size="120"
 							bg-color="#19BE6B" separator-size="120" @change="timerChange" ref="timer"
 							:show-border="false"></u-count-down>
-					</view> -->
+					</view>
 
 				</view>
 			</view>
@@ -63,15 +63,6 @@
 				</view>
 			</view>
 		</view>
-
-		<!-- <view class="button">
-			<view v-if="timerStatus === 'paused'" @click="continueTimer()">
-				<u-icon name="play-circle-fill" size="96"></u-icon>
-			</view>
-			<view v-else-if="timerStatus === 'running'" @click="pauseTimer()">
-				<u-icon name="pause-circle-fill" size="96"></u-icon>
-			</view>
-		</view> -->
 	</view>
 </template>
 
@@ -82,7 +73,7 @@
 				// 铃声音频对象
 				ringtoneAudio: {},
 				// 铃声音量
-				ringtoneVolume: 0,
+				ringtoneVolume: 30,
 				// 当前计时器
 				currentTimer: {
 					cycleTimes: 1,
@@ -121,14 +112,14 @@
 		},
 		watch: {
 			countDownLeftTime(e) {
-				console.log('剩余秒数：' + e)
+				// console.log('剩余秒数：' + e)
 				
-				if (e <= 5 && e > 0) {
+				// if (e <= 5 && e > 0) {
 					
-					if(this.ringtoneAudio.paused){
-						this.ringtoneAudio.play()
-					}
-				}
+				// 	if(this.ringtoneAudio.paused){
+				// 		this.ringtoneAudio.play()
+				// 	}
+				// }
 				
 				// if (e = 0) {
 				// 	this.ringtoneAudio.stop()					
@@ -178,10 +169,6 @@
 
 					this.countDownLeftTime = workTime
 					this.timerStatus = 'running'
-					
-					this.timerID = setInterval(()=>{
-						this.countDownLeftTime--
-					},1000)
 
 					this.ringtoneAudio = uni.createInnerAudioContext()
 					this.ringtoneAudio.src = "../static/high.mp3"
@@ -207,17 +194,37 @@
 				this.countDownLeftTime = this.pauseTime
 				this.timerStatus = 'running'
 			},
-			// timerChange(e) {
-			// 	if (e < 0) {
-			// 		e = 0
-			// 	}
+			timerChange(e) {
+				if (e < 0) {
+					e = 0
+				}
 				
-			// 	console.log('倒计时参数:' + e)
+				this.countDownLeftTime = e
 
-			// 	this.countDownLeftTime = e
+				if (e <= 5 && e > 0) {
+					
+					if(this.ringtoneAudio.paused){
+						this.ringtoneAudio.play()
+					}
+				}
+				if (e === 0) {
+					this.ringtoneAudio.stop()					
+					
+					if (this.timerName === '工作') {
+						this.timerName = '休息'
+						this.countDownLeftTime = this.resetTime
+					} else if (this.timerName === '休息') {
+						this.leftCycleTimes--
+						if (this.leftCycleTimes === 0) {
+							this.gotoIndexPage()
+						} else {
+							this.timerName = '工作'
+							this.countDownLeftTime = this.workTime
+						}
+					}
+				}
 
-
-			// },
+			},
 			gotoIndexPage() {
 				this.countDownLeftTime = 0
 				this.ringtoneAudio.stop()
