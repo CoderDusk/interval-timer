@@ -110,43 +110,6 @@
 		beforeDestroy() {
 			this.ringtoneAudio.stop()
 		},
-		watch: {
-			countDownLeftTime(e) {
-				// console.log('剩余秒数：' + e)
-				
-				// if (e <= 5 && e > 0) {
-					
-				// 	if(this.ringtoneAudio.paused){
-				// 		this.ringtoneAudio.play()
-				// 	}
-				// }
-				
-				// if (e = 0) {
-				// 	this.ringtoneAudio.stop()					
-				// 	clearInterval(this.timerID)
-					
-				// 	if (this.timerName === '工作') {
-				// 		this.timerName = '休息'
-				// 		this.countDownLeftTime = this.resetTime
-				// 	} else if (this.timerName === '休息') {
-				// 		this.leftCycleTimes--
-				// 		if (this.leftCycleTimes === 0) {
-				// 			// uni.navigateTo({
-				// 			// 	url: 'index'
-				// 			// })
-				// 			this.gotoIndexPage()
-				// 		} else {
-				// 			this.timerName = '工作'
-				// 			this.countDownLeftTime = this.workTime
-				// 		}
-				// 	}
-					
-				// 	this.timerID = setInterval(()=>{
-				// 		this.countDownLeftTime--
-				// 	},1000)
-				// }
-			}
-		},
 		methods: {
 			initTimer() {
 				const {
