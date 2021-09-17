@@ -7,6 +7,10 @@
 ## 详细介绍与文档
 [循环计时器文档](http://docs.coderdusk.com/interval-timer/)
 
+[更新记录](./changelog.md)
+
+
+
 ## 截图
 
 ![首页](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/81ff38b2ceee41548e82a20d5f4734b8~tplv-k3u1fbpfcp-zoom-1.image)
@@ -38,5 +42,4 @@ Android APK 下载 ：
 ## 雇用我
 
 我现在正在寻找一份远程前端工作，兼职、项目外包皆可。如果您有工作机会可以提供，欢迎通过邮箱 ([coderdusk@qq.com](mailto:coderdusk@qq.com)) 或微信（hellodusk）联系我。
-
 

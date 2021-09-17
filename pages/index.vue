@@ -29,7 +29,9 @@
 			</view>
 		</view>
 
-
+		<view class="empty-timer-list" v-if="timerList.length === 0">
+			<u-empty text="还没有计时器" mode="data"></u-empty>
+		</view>
 
 		<view class="timer-list">
 			<block v-for="(item,index) in timerList" :key="item.timestamp">
@@ -298,9 +300,6 @@
 		/* #ifdef H5 */
 		padding: 30rpx;
 		/* #endif */
-
-
-
 	}
 </style>
 
@@ -387,6 +386,10 @@
 
 	.timer-title-input {
 		margin: 20rpx 30rpx;
+	}
+	
+	.empty-timer-list{
+		margin-top: 80rpx;
 	}
 
 	.timer-list {
