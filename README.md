@@ -4,11 +4,6 @@
 
 本项目是开源项目，你可以在 [Github](https://github.com/CoderDusk/interval-timer) 上看到完整代码。
 
-## 详细介绍与文档
-
-[循环计时器文档](http://docs.coderdusk.com/interval-timer/)
-
-[更新记录](./changelog.md)
 
 ## 截图
 
@@ -20,11 +15,7 @@
 
 网页版 / HTML5 ：
 
-[循环计时器 (interval.coderdusk.com)](http://interval.coderdusk.com/#/)
-
-Android APK 下载 ：
-
-[APK 下载链接](https://vkceyugu.cdn.bspapp.com/VKCEYUGU-6fec5402-1210-4b81-9949-97c1987784b9/8149b671-78e3-4fb2-b7ad-bf8fda792226.apk)
+[循环计时器 (https://tools.coderdusk.com/interval-timer-1)](https://tools.coderdusk.com/interval-timer-1/)
 
 ## 关于作者
 
