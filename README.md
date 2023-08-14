@@ -1,5 +1,5 @@
 ## 存档说明
-这个项目已经处于存档状态，您可以移步至更完善更全面的 土豆计时器（Todo Timer）项目。
+这个项目已经处于存档状态，您可以移步至更完善更全面的 [土豆计时器（Todo Timer）项目](https://github.com/CoderDusk/todo-timer)。
 
 ## 简介
 
